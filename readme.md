@@ -1,4 +1,7 @@
-![Design Patterns For Humans](https://cloud.githubusercontent.com/assets/11269635/23065273/1b7e5938-f515-11e6-8dd3-d0d58de6bb9a.png)
+<br>
+<p align="center">
+  <img src="./.github/banner.svg" height="150px" />
+</p>
 
 ***
 
@@ -6,17 +9,31 @@
 🎉 Ultra-simplified explanation to design patterns! 🎉
 </p>
 <p align="center">
-A topic that can easily make anyone's mind wobble. Here I try to make them stick in to your mind (and maybe mine) by explaining them in the <i>simplest</i> way possible.
+A topic that can easily make anyone's mind wobble. Here I try to make them stick in to your<br> mind (and maybe mine) by explaining them in the <i>simplest</i> way possible.
 </p>
 
-
 ***
 
-<p align="center"><b> Did you like this guide and want more of the similar content? </b><br>Subscribe for the launch of <a href="http://hugobots.com">Hugobots</a> or <a href="http://twitter.com/kamranahmedse">follow me on twitter</a>!</p>
+<sub>Check out my [other project](http://roadmap.sh) and say "hi" on [Twitter](https://twitter.com/kamrify).</sub>
 
-***
+<br>
 
-🚀 Introduction
+|[Creational Design Patterns](#creational-design-patterns)|[Structural Design Patterns](#structural-design-patterns)|[Behavioral Design Patterns](#behavioral-design-patterns)|
+|:-|:-|:-|
+|[Simple Factory](#-simple-factory)|[Adapter](#-adapter)|[Chain of Responsibility](#-chain-of-responsibility)|
+|[Factory Method](#-factory-method)|[Bridge](#-bridge)|[Command](#-command)|
+|[Abstract Factory](#-abstract-factory)|[Composite](#-composite)|[Iterator](#-iterator)|
+|[Builder](#-builder)|[Decorator](#-decorator)|[Mediator](#-mediator)|
+|[Prototype](#-prototype)|[Facade](#-facade)|[Memento](#-memento)|
+|[Singleton](#-singleton)|[Flyweight](#-flyweight)|[Observer](#-observer)|
+||[Proxy](#-proxy)|[Visitor](#-visitor)|
+|||[Strategy](#-strategy)|
+|||[State](#-state)|
+|||[Template Method](#-template-method)|
+
+<br>
+
+Introduction
 =================
 
 Design patterns are solutions to recurring problems; **guidelines on how to tackle certain problems**. They are not classes, packages or libraries that you can plug into your application and wait for the magic to happen. These are, rather, guidelines on how to tackle certain problems in certain situations.
@@ -30,10 +47,11 @@ Wikipedia describes them as
 ⚠️ Be Careful
 -----------------
 - Design patterns are not a silver bullet to all your problems.
-- Do not try to force them; bad things are supposed to happen, if done so. Keep in mind that design patterns are solutions **to** problems, not solutions **finding** problems; so don't overthink.
+- Do not try to force them; bad things are supposed to happen, if done so. 
+- Keep in mind that design patterns are solutions **to** problems, not solutions **finding** problems; so don't overthink.
 - If used in a correct place in a correct manner, they can prove to be a savior; or else they can result in a horrible mess of a code.
 
-> Also note that the code samples below are in PHP-7, however this shouldn't stop you because the concepts are same anyways. Plus the **support for other languages is underway**.
+> Also note that the code samples below are in PHP-7, however this shouldn't stop you because the concepts are same anyways.
 
 Types of Design Patterns
 -----------------
@@ -61,7 +79,7 @@ Wikipedia says
 🏠 Simple Factory
 --------------
 Real world example
-> Consider, you are building a house and you need doors. It would be a mess if every time you need a door, you put on your carpenter clothes and start making a door in your house. Instead you get it made from a factory.
+> Consider, you are building a house and you need doors. You can either put on your carpenter clothes, bring some wood, glue, nails and all the tools required to build the door and start building it in your house or you can simply call the factory and get the built door delivered to you so that you don't need to learn anything about the door making or to deal with the mess that comes with making it.
 
 In plain words
 > Simple factory simply generates an instance for client without exposing any instantiation logic to the client
@@ -113,9 +131,14 @@ class DoorFactory
 ```
 And then it can be used as
 ```php
+// Make me a door of 100x200
 $door = DoorFactory::makeDoor(100, 200);
+
 echo 'Width: ' . $door->getWidth();
 echo 'Height: ' . $door->getHeight();
+
+// Make me a door of 50x100
+$door2 = DoorFactory::makeDoor(50, 100);
 ```
 
 **When to Use?**
@@ -626,6 +649,7 @@ class Hunter
 {
     public function hunt(Lion $lion)
     {
+        $lion->roar();
     }
 }
 ```
@@ -1222,7 +1246,7 @@ class LabDoor implements Door
 ```
 Then we have a proxy to secure any doors that we want
 ```php
-class Security
+class SecuredDoor implements Door
 {
     protected $door;
 
@@ -1253,7 +1277,7 @@ class Security
 ```
 And here is how it can be used
 ```php
-$door = new Security(new LabDoor());
+$door = new SecuredDoor(new LabDoor());
 $door->open('invalid'); // Big no! It ain't possible.
 
 $door->open('$ecr@t'); // Opening lab door
@@ -1815,7 +1839,7 @@ class JobSeeker implements Observer
 ```
 Then we have our job postings to which the job seekers will subscribe
 ```php
-class JobPostings implements Observable
+class EmploymentAgency implements Observable
 {
     protected $observers = [];
 
@@ -1844,7 +1868,7 @@ $johnDoe = new JobSeeker('John Doe');
 $janeDoe = new JobSeeker('Jane Doe');
 
 // Create publisher and attach subscribers
-$jobPostings = new JobPostings();
+$jobPostings = new EmploymentAgency();
 $jobPostings->attach($johnDoe);
 $jobPostings->attach($janeDoe);
 
@@ -2044,28 +2068,35 @@ And then we have our client that is going to use any strategy
 ```php
 class Sorter
 {
-    protected $sorter;
+    protected $sorterSmall;
+    protected $sorterBig;
 
-    public function __construct(SortStrategy $sorter)
+    public function __construct(SortStrategy $sorterSmall, SortStrategy $sorterBig)
     {
-        $this->sorter = $sorter;
+        $this->sorterSmall = $sorterSmall;
+        $this->sorterBig = $sorterBig;
     }
 
     public function sort(array $dataset): array
     {
-        return $this->sorter->sort($dataset);
+        if (count($dataset) > 5) {
+            return $this->sorterBig->sort($dataset);
+        } else {
+            return $this->sorterSmall->sort($dataset);
+        }
     }
 }
 ```
 And it can be used as
 ```php
-$dataset = [1, 5, 4, 3, 2, 8];
+$smalldataset = [1, 3, 4, 2];
+$bigdataset = [1, 4, 3, 2, 8, 10, 5, 6, 9, 7];
 
-$sorter = new Sorter(new BubbleSortStrategy());
+$sorter = new Sorter(new BubbleSortStrategy(), new QuickSortStrategy());
+
 $sorter->sort($dataset); // Output : Sorting using bubble sort
 
-$sorter = new Sorter(new QuickSortStrategy());
-$sorter->sort($dataset); // Output : Sorting using quick sort
+$sorter->sort($bigdataset); // Output : Sorting using quick sort
 ```
 
 💢 State
@@ -2082,84 +2113,81 @@ Wikipedia says
 
 **Programmatic example**
 
-Let's take an example of text editor, it lets you change the state of text that is typed i.e. if you have selected bold, it starts writing in bold, if italic then in italics etc.
-
-First of all we have our state interface and some state implementations
+Let's take an example of a phone. First of all we have our state interface and some state implementations
 
 ```php
-interface WritingState
-{
-    public function write(string $words);
+interface PhoneState {
+    public function pickUp(): PhoneState;
+    public function hangUp(): PhoneState;
+    public function dial(): PhoneState;
 }
 
-class UpperCase implements WritingState
-{
-    public function write(string $words)
-    {
-        echo strtoupper($words);
+// states implementation
+class PhoneStateIdle implements PhoneState {
+    public function pickUp(): PhoneState {
+        return new PhoneStatePickedUp();
+    }
+    public function hangUp(): PhoneState {
+        throw new Exception("already idle");
+    }
+    public function dial(): PhoneState {
+        throw new Exception("unable to dial in idle state");
     }
 }
 
-class LowerCase implements WritingState
-{
-    public function write(string $words)
-    {
-        echo strtolower($words);
+class PhoneStatePickedUp implements PhoneState {
+    public function pickUp(): PhoneState {
+        throw new Exception("already picked up");
+    }
+    public function hangUp(): PhoneState {
+        return new PhoneStateIdle();
+    }
+    public function dial(): PhoneState {
+        return new PhoneStateCalling();
     }
 }
 
-class Default implements WritingState
-{
-    public function write(string $words)
-    {
-        echo $words;
+class PhoneStateCalling implements PhoneState {
+    public function pickUp(): PhoneState {
+        throw new Exception("already picked up");
+    }
+    public function hangUp(): PhoneState {
+        return new PhoneStateIdle();
+    }
+    public function dial(): PhoneState {
+        throw new Exception("already dialing");
     }
 }
 ```
-Then we have our editor
+
+Then we have our Phone class that changes the state on different behavior calls
+
 ```php
-class TextEditor
-{
-    protected $state;
+class Phone {
+    private $state;
 
-    public function __construct(WritingState $state)
-    {
-        $this->state = $state;
+    public function __construct() {
+        $this->state = new PhoneStateIdle();
     }
-
-    public function setState(WritingState $state)
-    {
-        $this->state = $state;
+    public function pickUp() {
+        $this->state = $this->state->pickUp();
     }
-
-    public function type(string $words)
-    {
-        $this->state->write($words);
+    public function hangUp() {
+        $this->state = $this->state->hangUp();
+    }
+    public function dial() {
+        $this->state = $this->state->dial();
     }
 }
 ```
-And then it can be used as
+
+And then it can be used as follows and it will call the relevant state methods:
+
 ```php
-$editor = new TextEditor(new Default());
+$phone = new Phone();
 
-$editor->type('First line');
-
-$editor->setState(new UpperCase());
-
-$editor->type('Second line');
-$editor->type('Third line');
-
-$editor->setState(new LowerCase());
-
-$editor->type('Fourth line');
-$editor->type('Fifth line');
-
-// Output:
-// First line
-// SECOND LINE
-// THIRD LINE
-// fourth line
-// fifth line
+$phone->pickUp();
+$phone->dial();
 ```
 
 📒 Template Method
@@ -2285,11 +2313,7 @@ And that about wraps it up. I will continue to improve this, so you might want t
 - Report issues
 - Open pull request with improvements
 - Spread the word
-- Reach out with any feedback [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/kamranahmedse.svg?style=social&label=Follow%20%40kamranahmedse)](https://twitter.com/kamranahmedse)
-
-## Sponsored By
-
-- [Highig - Think and its done](http://highig.com/)
+- Reach out with any feedback [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/kamrify.svg?style=social&label=Follow%20%40kamrify)](https://twitter.com/kamrify)
 
 ## License
 
